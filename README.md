@@ -6,6 +6,53 @@ The primary objective is to analyze wholesale price fluctuations and product los
 
 ---
 
+## Data Sources
+
+This analysis is based on the following database tables:
+
+### 1. Items Table
+Contains product master data with item identification and categorization.
+
+| Column | Description |
+|:-------|:------------|
+| Item Code | Unique identifier for each product (e.g., 102900005115168) |
+| Item Name | Product name (e.g., Niushou Shengcai, Sichuan Red Cedar) |
+| Category Code | Category identifier (e.g., 1011010101) |
+| Category Name | Product category (e.g., Flower/Leaf Vegetables, Capsicum) |
+
+### 2. Pricing Table
+Stores historical wholesale pricing data with date, item code, and price per kilogram.
+
+| Column | Description |
+|:-------|:------------|
+| Date | Transaction date (YYYY-MM-DD format) |
+| Item Code | Product identifier linking to Items table |
+| Wholesale Price (RMB/kg) | Unit wholesale price in Chinese Yuan per kilogram |
+
+### 3. Loss Rate Table
+Tracks inventory loss percentages for each product.
+
+| Column | Description |
+|:-------|:------------|
+| Item Code | Product identifier linking to Items table |
+| Item Name | Product name for reference |
+| Loss Rate (%) | Percentage of inventory lost due to spoilage, damage, or waste |
+
+### 4. Sales Transactions Table
+Records individual sales transactions with detailed pricing and quantity information.
+
+| Column | Description |
+|:-------|:------------|
+| Date | Transaction date |
+| Time | Transaction time |
+| Item Code | Product identifier |
+| Quantity | Units sold |
+| Unit Selling Price | Selling price per unit |
+| Sale or Return | Transaction type indicator |
+| Discount | Discount applied (if any) |
+
+---
+
 ## I. Price & Cost Analysis
 
 ### 1. Average Wholesale Price by Category
@@ -164,6 +211,77 @@ These items are the primary revenue drivers.
 10. Chinese Cabbage
 
 > **Insight:** Items like Broccoli and Net Lotus Root (1) are simultaneously top sellers and among the most-sold by volume, making them the most critical items to maintain stock and protect from loss.
+
+---
+
+## V. Example SQL Queries
+
+### Query 1: Average Wholesale Price by Category
+
+```sql
+SELECT 
+    i.category_name,
+    AVG(p.wholesale_price) AS avg_wholesale_price
+FROM 
+    pricing p
+    JOIN items i ON p.item_code = i.item_code
+GROUP BY 
+    i.category_name
+ORDER BY 
+    avg_wholesale_price DESC;
+```
+
+**Purpose:** Identifies which product categories command the highest prices, informing pricing strategy and product mix decisions.
+
+### Query 2: High-Value Loss Items
+
+```sql
+SELECT 
+    i.item_code,
+    i.item_name,
+    i.category_name,
+    AVG(p.wholesale_price) AS avg_price,
+    l.loss_rate,
+    (AVG(p.wholesale_price) * l.loss_rate / 100) AS value_lost
+FROM 
+    items i
+    JOIN pricing p ON i.item_code = p.item_code
+    JOIN loss_rate l ON i.item_code = l.item_code
+GROUP BY 
+    i.item_code, i.item_name, i.category_name, l.loss_rate
+ORDER BY 
+    value_lost DESC
+LIMIT 10;
+```
+
+**Purpose:** Calculates the monetary value of losses for each product, prioritizing inventory management efforts on items with the highest financial impact.
+
+### Query 3: Sales Performance with Price Volatility
+
+```sql
+SELECT 
+    i.item_name,
+    i.category_name,
+    COUNT(s.item_code) AS transaction_count,
+    SUM(s.quantity) AS total_quantity_sold,
+    SUM(s.quantity * s.unit_selling_price) AS total_sales_value,
+    AVG(p.wholesale_price) AS avg_wholesale_price,
+    STDDEV(p.wholesale_price) AS price_volatility
+FROM 
+    sales_transactions s
+    JOIN items i ON s.item_code = i.item_code
+    JOIN pricing p ON s.item_code = p.item_code 
+        AND DATE(s.date) = p.date
+WHERE 
+    s.sale_or_return = 'sale'
+GROUP BY 
+    i.item_code, i.item_name, i.category_name
+ORDER BY 
+    total_sales_value DESC
+LIMIT 20;
+```
+
+**Purpose:** Combines sales performance metrics with price volatility to identify high-revenue items that may require dynamic pricing strategies or inventory buffering.
 
 ---
 
