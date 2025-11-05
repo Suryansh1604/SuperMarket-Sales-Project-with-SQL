@@ -1,0 +1,37 @@
+I. Price & Cost Analysis
+What is the average wholesale price for each Category Name (e.g., 'Edible Mushroom') across the entire period in annex3.csv?
+
+Identify the Top 5 items with the highest and lowest average wholesale price over the entire available period.
+
+Calculate the month-over-month (MoM) percentage change in the average wholesale price for the overall category.
+
+Determine the most volatile item by calculating the standard deviation of its wholesale price over time, and rank the top 10.
+
+What is the average price of items with a Loss Rate (%) greater than 15% compared to items with a Loss Rate less than 5%? 
+
+📦 II. Inventory & Loss Rate Analysis
+Which Category Name has the highest average Loss Rate (%)?
+
+List all Item Names that have a Loss Rate (%) of 0.00 and their corresponding Category Name.
+
+Identify the 5 most valuable items lost by calculating Average Wholesale Price * Loss Rate (%) and ranking them. This can help prioritize inventory management efforts.
+
+
+📅 III. Time-Series and Trend Analysis
+Plot the 3-year trend (monthly or quarterly average) of the wholesale price for the top 3 items by Quantity_sold
+
+Which day of the week (Monday, Tuesday, etc.) or which month exhibits the highest/lowest average wholesale prices?
+
+Find the largest single-day price drop (in absolute RMB) for any item in the dataset.
+
+💰 IV. Sales & Performance Analysis (Using Hypothetical annex2 Data)
+Calculate the total sales revenue for each Category Name by multiplying Unit Selling Price (RMB/kg) from annex2.csv and Sales Volume (kg) from the hypothetical annex2 data.
+
+Identify the Top 10 performing items based on total sales volume over the entire period.
+
+
+
+💡 Project: Price and Loss Optimization for Fresh Produce
+🎯 Project Goal
+The primary objective is to analyze wholesale price fluctuations and product loss rates to identify high-risk, high-reward items and categories, providing actionable insights for pricing strategy, procurement, and inventory management.
+
